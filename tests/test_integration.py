@@ -6,6 +6,7 @@ import os
 from pathlib import Path
 import signal
 import shlex
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -53,6 +54,18 @@ class NativeSmokeTests(unittest.TestCase):
         report=json.loads(result.stdout)
         self.assertTrue(Path(report['evidence']).is_relative_to(self.root/'plugin data/resources'),report)
         self.assertEqual(report['status'],'cleaned')
+
+    def test_running_installed_copy_does_not_mutate_plugin_files(self):
+        plugin=self.root/'installed-plugin'
+        shutil.copytree(RUNNER.parent,plugin/'scripts',ignore=shutil.ignore_patterns('__pycache__'))
+        before={str(p.relative_to(plugin)):p.read_bytes() for p in plugin.rglob('*') if p.is_file()}
+        # Ordinary invocation without -B must not invalidate the host's trust
+        # fingerprint by creating bytecode inside its cached plugin package.
+        result=subprocess.run([sys.executable,str(plugin/'scripts/dev_resources.py'),'--state-dir',str(self.state),'run','--repo',str(self.repo),'--session','immutable-plugin','--task','smoke','--min-free-mb','0','--',sys.executable,'-c','pass'],capture_output=True,text=True,timeout=20)
+        self.assertEqual(result.returncode,0,result.stdout+result.stderr)
+        after={str(p.relative_to(plugin)):p.read_bytes() for p in plugin.rglob('*') if p.is_file()}
+        self.assertEqual(set(after),set(before),'Execution added files to the installed plugin')
+        self.assertEqual(after,before,'Execution changed installed plugin contents')
 
     def test_timeout_stops_child_and_cleans(self):
         result=subprocess.run(self.cli('import time; time.sleep(60)','--timeout','0.2'),capture_output=True,text=True,timeout=20)

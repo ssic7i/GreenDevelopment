@@ -27,10 +27,10 @@ After publication, replace `OWNER/GreenDevelopment` placeholders in installation
 After checks pass and release changes are committed:
 
 ```sh
-git tag -a v0.3.2 -m "GreenDevelopment 0.3.2"
-git push origin v0.3.2
+git tag -a v0.3.3 -m "GreenDevelopment 0.3.3"
+git push origin v0.3.3
 git archive --format=zip --prefix=GreenDevelopment/ \
-  --output=../GreenDevelopment-source.zip v0.3.2
+  --output=../GreenDevelopment-source.zip v0.3.3
 ```
 
 Create a GitHub release from the tag and attach the verified source ZIP and optional plugin ZIP. GitHub's generated source archive also retains the repository installation catalog. The initial prepared plugin ZIP excludes marketplace/Git/CI metadata and is a different artifact from the source ZIP.

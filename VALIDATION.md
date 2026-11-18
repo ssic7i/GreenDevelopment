@@ -1,6 +1,12 @@
-# GreenDevelopment validation — 0.3.2
+# GreenDevelopment validation — 0.3.3
 
-Executed on 2026-11-18. GreenDevelopment 0.3.2 is installed and enabled in the local Codex profile. It has not been published. Native host dispatch and automatic Stop cleanup were verified after the user trusted the seven hooks; see the precise coverage below.
+Executed on 2026-11-18. Version 0.3.3 fixes plugin immutability discovered during the 0.3.2 installed-host check. It has not been published. Native host coverage and its limitations are recorded below; persisted trust must be checked after installation and execution.
+
+## Plugin immutability fix
+
+The 0.3.2 host run created Python bytecode in the cached plugin when the runner was invoked without `-B`. A fresh native hook inventory then reported modified trust. A failing integration regression reproduced the new files in a temporary installed copy. Version 0.3.3 disables bytecode before importing local modules and includes `-B` in startup guidance. The regression now compares all installed file names and contents before/after an ordinary invocation without `-B`.
+
+Package updates, including documentation, may require renewed hook trust. Keep final host receipts outside the installed package; never edit trust records or bypass the host check.
 
 ## Repository preparation
 
@@ -15,7 +21,7 @@ LICENSE is the unmodified official Apache License 2.0 text, SHA-256 `cfc7749b96f
 
 ## Executed checks
 
-- **63/63 tests passed**, including six native subprocess integration cases and 16 new device reuse/app-preservation cases. Command: `DEV_WORKFLOW_NATIVE_SMOKE=1 python3 -B -m unittest discover -s tests -v`.
+- **64/64 tests passed**, including seven native subprocess integration cases and 16 new device reuse/app-preservation cases. Command: `DEV_WORKFLOW_NATIVE_SMOKE=1 python3 -B -m unittest discover -s tests -v`.
 - Native cases covered successful artifact retention, failure exit status, timeout, SIGTERM, and a background worker left by the main command. Task work was removed, retained evidence remained, and the unrelated control process survived.
 - The 0.1.0 live Docker check passed **three runs**: a container command, a small `FROM scratch` image build, and Compose with a named volume/network. Each run's resources were removed. A separate control container, network and volume remained intact, as did the pre-existing base image. The test then removed its own control fixtures. An explicitly selected local image ID was used; no base image was pulled. Docker adapter behavior is unchanged through 0.3.2; its unit regressions passed again. Command: `DEV_WORKFLOW_DOCKER_SMOKE=1 DEV_WORKFLOW_SMOKE_IMAGE=LOCAL_IMAGE_ID python3 -B tests/docker_smoke.py`.
 - New selectors read the actual installed Android/iOS inventories and selected existing devices, both without filters and with exact image/profile or runtime/type filters. The check explicitly prohibited native creation, boot and shutdown. It created no extra devices and removed its temporary state.
@@ -24,7 +30,7 @@ LICENSE is the unmodified official Apache License 2.0 text, SHA-256 `cfc7749b96f
 - The official local skill validator accepted all **three skills**. Metadata, the canonical manifest, hook paths/timeouts, Python syntax, internal documentation links and absence of project-specific/local installation paths were checked.
 - Source/plugin ZIPs were checked for expected contents, unsafe paths, CRC integrity and byte-for-byte agreement with committed source. Only the source archive includes the repository marketplace and CI configuration; neither contains `.git` or runtime state. The extracted runner's CLI loaded successfully.
 
-## Installed-host verification
+## Installed-host verification on 0.3.2
 
 An ephemeral Codex session explicitly loaded all three installed skills and exercised normal tool execution. The host emitted successful `SessionStart`, `PreToolUse` and `Stop` dispatch events. The verification harness observed the following independently of the agent's final message:
 
@@ -48,6 +54,6 @@ Android/iOS creation, boot and app cleanup were tested with controlled command r
 
 Actual Codex discovery, installation, persisted trust and the host paths described above were exercised. Direct JSON invocation of the other events validates their scripts, not native dispatch. Hook trust may need review again after future executable changes. Disabled hooks, tools outside their coverage, deliberately detached workers and arbitrary scripts that bypass the runner are outside the enforcement guarantee.
 
-The command guard is a conservative text heuristic, not a shell parser: it also blocked a documentation-writing shell heredoc that merely mentioned a native build command. The documentation was edited with the dedicated file-editing tool instead. This false-positive limit remains in 0.3.2.
+The command guard is a conservative text heuristic, not a shell parser: it also blocked a documentation-writing shell heredoc that merely mentioned a native build command. The documentation was edited with the dedicated file-editing tool instead. This false-positive limit remains in 0.3.3.
 
 SIGKILL or host failure can interrupt cleanup; signed records support later scoped recovery. A live orphan or lost device-instance proof remains blocked to protect other work. No machine-wide cleanup was performed.

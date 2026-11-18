@@ -2,7 +2,7 @@
 
 Reusable development rules and resource cleanup for Codex: focused changes, fewer repeated reads, conditional delegation, required quality checks, and Android/iOS/Docker cleanup without repeated project instructions.
 
-**Version:** 0.3.2 · **License:** [Apache 2.0](LICENSE) · **Platforms:** macOS/Linux; iOS needs macOS/Xcode.
+**Version:** 0.3.3 · **License:** [Apache 2.0](LICENSE) · **Platforms:** macOS/Linux; iOS needs macOS/Xcode.
 
 ## Included
 

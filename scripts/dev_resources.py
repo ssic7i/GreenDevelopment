@@ -14,6 +14,10 @@ import subprocess
 import sys
 import time
 
+# Cached plugin contents are part of host hook trust. Ordinary Python callers
+# must not create bytecode beside these modules and invalidate that trust.
+sys.dont_write_bytecode = True
+
 from resource_core import command, Store, Unsafe, canonical, process_identity, remove_work, retain, snapshot, tree_size, write_json
 from docker_resources import cleanup_docker, prepare_docker, setup_docker
 from mobile_resources import cleanup_devices, prepare_mobile, setup_device
@@ -211,7 +215,7 @@ def hook_result(store,event):
     if kind in ('SessionStart','SubagentStart'):
         # Scope recovery to this source directory, not unrelated projects.
         reports=recover(store,repo=event.get('cwd')) if event.get('cwd') else []
-        text=(f'GreenDevelopment: use the three bundled skills for applicable work. Run builds/tests through python3 {shlex.quote(str(runner))} run --state-dir {shlex.quote(str(store.root))} --session {shlex.quote(session or "unknown")} --task <slug> --platform <generic|android|ios|docker> --repo <source> -- <command>. '
+        text=(f'GreenDevelopment: use the three bundled skills for applicable work. Run builds/tests through python3 -B {shlex.quote(str(runner))} run --state-dir {shlex.quote(str(store.root))} --session {shlex.quote(session or "unknown")} --task <slug> --platform <generic|android|ios|docker> --repo <source> -- <command>. '
               'The runner isolates outputs, retains requested artifacts, and cleans its own resources. Never prune shared caches, delete devices, or commandeer active devices. Read resource-lifecycle before a first run. ')
         if reports: text+='Recovery: '+json.dumps(reports)[:1800]
         return {'hookSpecificOutput':{'hookEventName':kind,'additionalContext':text}}
