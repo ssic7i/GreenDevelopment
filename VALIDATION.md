@@ -1,6 +1,6 @@
 # GreenDevelopment validation — 0.3.3
 
-Executed on 2026-11-18. Version 0.3.3 fixes plugin immutability discovered during the 0.3.2 installed-host check. It has not been published. Native host coverage and its limitations are recorded below; persisted trust must be checked after installation and execution.
+Executed on 2026-11-18. Version 0.3.3 is installed and enabled, with all three skills active and all seven hooks trusted. It fixes plugin immutability discovered during the 0.3.2 installed-host check. It has not been published. The final host check verified automatic cleanup and preserved trust after execution in a fresh host process.
 
 ## Plugin immutability fix
 
@@ -30,14 +30,15 @@ LICENSE is the unmodified official Apache License 2.0 text, SHA-256 `cfc7749b96f
 - The official local skill validator accepted all **three skills**. Metadata, the canonical manifest, hook paths/timeouts, Python syntax, internal documentation links and absence of project-specific/local installation paths were checked.
 - Source/plugin ZIPs were checked for expected contents, unsafe paths, CRC integrity and byte-for-byte agreement with committed source. Only the source archive includes the repository marketplace and CI configuration; neither contains `.git` or runtime state. The extracted runner's CLI loaded successfully.
 
-## Installed-host verification on 0.3.2
+## Installed-host verification on 0.3.3
 
-An ephemeral Codex session explicitly loaded all three installed skills and exercised normal tool execution. The host emitted successful `SessionStart`, `PreToolUse` and `Stop` dispatch events. The verification harness observed the following independently of the agent's final message:
+An ephemeral Codex session (CLI 0.169.0-alpha.11.1) explicitly loaded all three installed skills and exercised normal tool execution. The host emitted successful `SessionStart`, `PreToolUse` and `Stop` dispatch events. The verification harness observed the following independently of the agent's final message:
 
 - `PreToolUse` denied one direct `./gradlew test` attempt against a harmless fake executable; its execution marker was absent.
 - The generic runner preserved the state directory/session from startup, exited successfully, removed its work directory, reported zero remaining bytes and retained the requested artifact. Its content was checked.
 - The last tool command created two signed inactive test records. The agent did not invoke recovery. The real `Stop` hook automatically cleaned only the record for that session; the other session's work still existed. The harness then cleaned its own control fixture.
 - Session shutdown produced the expected `SessionEnd` marker in the same plugin state store.
+- All installed file names and contents were identical before and after the host test. A fresh app-server process still reported all seven hooks as trusted and all three skills enabled. An additional ordinary invocation without `-B` also preserved every installed file and all seven native hook fingerprints.
 - The short-lived app-server exited. No Android/iOS devices or Docker workloads were launched for this host check; shared caches and unrelated resources were untouched.
 
 The seven JSON contracts also passed against the installed scripts. `Interrupt`, `SubagentStart` and `SubagentStop` have contract coverage here, but their native host event dispatch was not separately exercised. No redundant agents were spawned to claim broader coverage.
@@ -54,6 +55,6 @@ Android/iOS creation, boot and app cleanup were tested with controlled command r
 
 Actual Codex discovery, installation, persisted trust and the host paths described above were exercised. Direct JSON invocation of the other events validates their scripts, not native dispatch. Hook trust may need review again after future executable changes. Disabled hooks, tools outside their coverage, deliberately detached workers and arbitrary scripts that bypass the runner are outside the enforcement guarantee.
 
-The command guard is a conservative text heuristic, not a shell parser: it also blocked a documentation-writing shell heredoc that merely mentioned a native build command. The documentation was edited with the dedicated file-editing tool instead. This false-positive limit remains in 0.3.3.
+The command guard is a conservative text heuristic, not a shell parser: it also blocked a documentation-writing shell heredoc and a read-only file search that merely mentioned a native build command. The documentation was edited with the dedicated file-editing tool instead. This false-positive limit remains in 0.3.3.
 
 SIGKILL or host failure can interrupt cleanup; signed records support later scoped recovery. A live orphan or lost device-instance proof remains blocked to protect other work. No machine-wide cleanup was performed.
