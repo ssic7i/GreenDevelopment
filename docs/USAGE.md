@@ -8,6 +8,10 @@ Startup guidance supplies the exact runner path, `--state-dir` and `--session`. 
 
 ## Direct runner
 
+The command guard permits recognized file readers even when their patterns or paths mention native tools: for example `rg -n gradlew .`, `rg --files | rg gradlew`, `cat gradlew`, `sed -n '1,40p' gradlew` and `git diff -- gradlew`. Quoted patterns are data. Every command in a reader chain must qualify; adding a build or unsafe cleanup command removes the exemption.
+
+The exemption excludes executable preprocessors/pagers, `find -exec`, executing `sed` scripts, unknown options and shell syntax whose effects cannot be established. Unquoted expansions, command substitutions, redirects, heredocs and shell wrappers retain the conservative guard. Quote search globs, for example `rg -g '*.md' gradlew .`. This guard checks common command forms; it does not sandbox configured Git helpers, aliases or arbitrary scripts.
+
 From this repository root:
 
 ```sh

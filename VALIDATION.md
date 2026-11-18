@@ -1,6 +1,12 @@
-# GreenDevelopment validation — 0.3.3
+# GreenDevelopment validation — 0.3.4
 
-Executed on 2026-11-18. Version 0.3.3 is installed and enabled, with all three skills active and all seven hooks trusted. It fixes plugin immutability discovered during the 0.3.2 installed-host check. It has not been published. The final host check verified automatic cleanup and preserved trust after execution in a fresh host process.
+Executed on 2026-11-18. Version 0.3.4 fixes false blocks of file reading/search commands. It has not been published. Native host evidence from 0.3.3 remains recorded below; the new executable package requires a fresh hook trust review. Final local installation receipts are kept outside the installed package to preserve its fingerprint.
+
+## Read-only guard fix
+
+The previous guard searched the entire command text, so data such as a filename or search pattern could look like a native build. Version 0.3.4 first recognizes a limited read-only shell subset. Quoted/escaped data and reader chains are handled without executing shell text. Every segment must qualify. Unknown syntax/options, executable modes and expansions receive no exemption and continue through the existing native-build/cleanup guard.
+
+New decision tests reproduced the false positives before the fix. They cover readers, quoted data, pipes/chains, direct native builds, global cleanup, managed platform profiles, command substitutions and executable reader options. Independent review found argument-consumption and shell-expansion bypasses in the initial exemption; failing regressions reproduced them and the final implementation closes them. Unknown `rg` options prevent exemption rather than guessing their argument grammar. The reviewer approved the fixes.
 
 ## Plugin immutability fix
 
@@ -21,7 +27,7 @@ LICENSE is the unmodified official Apache License 2.0 text, SHA-256 `cfc7749b96f
 
 ## Executed checks
 
-- **64/64 tests passed**, including seven native subprocess integration cases and 16 new device reuse/app-preservation cases. Command: `DEV_WORKFLOW_NATIVE_SMOKE=1 python3 -B -m unittest discover -s tests -v`.
+- **74/74 tests passed**, including ten guard tests with parameterized decisions, seven native subprocess integration cases and 16 device reuse/app-preservation cases. Command: `DEV_WORKFLOW_NATIVE_SMOKE=1 python3 -B -m unittest discover -s tests -v`. The suite ran through the resource runner; its receipt reported successful cleanup and zero remaining work bytes.
 - Native cases covered successful artifact retention, failure exit status, timeout, SIGTERM, and a background worker left by the main command. Task work was removed, retained evidence remained, and the unrelated control process survived.
 - The 0.1.0 live Docker check passed **three runs**: a container command, a small `FROM scratch` image build, and Compose with a named volume/network. Each run's resources were removed. A separate control container, network and volume remained intact, as did the pre-existing base image. The test then removed its own control fixtures. An explicitly selected local image ID was used; no base image was pulled. Docker adapter behavior is unchanged through 0.3.2; its unit regressions passed again. Command: `DEV_WORKFLOW_DOCKER_SMOKE=1 DEV_WORKFLOW_SMOKE_IMAGE=LOCAL_IMAGE_ID python3 -B tests/docker_smoke.py`.
 - New selectors read the actual installed Android/iOS inventories and selected existing devices, both without filters and with exact image/profile or runtime/type filters. The check explicitly prohibited native creation, boot and shutdown. It created no extra devices and removed its temporary state.
@@ -55,6 +61,6 @@ Android/iOS creation, boot and app cleanup were tested with controlled command r
 
 Actual Codex discovery, installation, persisted trust and the host paths described above were exercised. Direct JSON invocation of the other events validates their scripts, not native dispatch. Hook trust may need review again after future executable changes. Disabled hooks, tools outside their coverage, deliberately detached workers and arbitrary scripts that bypass the runner are outside the enforcement guarantee.
 
-The command guard is a conservative text heuristic, not a shell parser: it also blocked a documentation-writing shell heredoc and a read-only file search that merely mentioned a native build command. The documentation was edited with the dedicated file-editing tool instead. This false-positive limit remains in 0.3.3.
+The guard recognizes a limited read-only subset rather than the complete shell language. Recognized file searches/readers no longer trigger on native-tool names used as data. Unsupported syntax, unknown reader options, heredocs and executable scripts can still produce conservative blocks. Use normal supported file readers or dedicated editing tools for those tasks; do not bypass a denied build or cleanup action.
 
 SIGKILL or host failure can interrupt cleanup; signed records support later scoped recovery. A live orphan or lost device-instance proof remains blocked to protect other work. No machine-wide cleanup was performed.

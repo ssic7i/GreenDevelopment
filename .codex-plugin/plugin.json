@@ -1,6 +1,6 @@
 {
   "name": "green-development",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "description": "Development, verification and owned-resource cleanup for local builds and tests.",
   "skills": "./skills/",
   "hooks": "./hooks/hooks.json",

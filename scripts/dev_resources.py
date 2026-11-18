@@ -21,6 +21,7 @@ sys.dont_write_bytecode = True
 from resource_core import command, Store, Unsafe, canonical, process_identity, remove_work, retain, snapshot, tree_size, write_json
 from docker_resources import cleanup_docker, prepare_docker, setup_docker
 from mobile_resources import cleanup_devices, prepare_mobile, setup_device
+from command_guard import is_read_only_shell
 
 
 class Interrupted(Exception):
@@ -223,6 +224,7 @@ def hook_result(store,event):
         data=event.get('tool_input',{})
         text=data.get('command',data.get('cmd','')) if isinstance(data,dict) else ''
         if not isinstance(text,str): return {}
+        if is_read_only_shell(text): return {}
         managed=bool(re.search(r'dev_resources\.py[\s\"\']+run\b',text))
         dangerous=bool(re.search(r'\bdocker\s+(?:system|builder|buildx|image|volume|network|container)\s+prune\b|\badb\s+kill-server\b|\bsimctl\s+(?:erase|delete)\s+all\b|\bgradle(?:w)?\b[^;\n]*--stop\b',text))
         build=bool(re.search(r'(?<![\w-])(?:\./)?gradlew?\b|\bxcodebuild\b|\bdocker\s+(?:build|run|create|compose)\b|\bsimctl\s+boot\b|\bemulator\s+(?:-avd|@)',text))
