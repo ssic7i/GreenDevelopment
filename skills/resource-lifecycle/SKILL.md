@@ -6,7 +6,7 @@ license: Apache-2.0
 
 # Resource Lifecycle
 
-Use the bundled runner for resource-producing work. Resolve `../../scripts/dev_resources.py` from this skill directory; SessionStart also supplies its absolute path. Read the [runner contract](references/runner.md), then only the applicable [Android](references/android.md), [iOS](references/ios.md) or [Docker](references/docker.md) reference.
+Use the bundled runner for resource-producing work. Resolve `../../scripts/dev_resources.py` from this skill directory; SessionStart also supplies its absolute path, `--state-dir` and `--session`. Keep both options in every run so completion hooks inspect the same records. Read the [runner contract](references/runner.md), then only the applicable [Android](references/android.md), [iOS](references/ios.md) or [Docker](references/docker.md) reference.
 
 The owner authorizes automatic disposal of resources created and recorded by this plugin, including recovery of inactive records from interrupted runs. No repeated cleanup approval is needed. Unknown/pre-existing resources remain protected. Never adopt an old directory or Docker object merely because it has a familiar name, is ignored or looks unused.
 

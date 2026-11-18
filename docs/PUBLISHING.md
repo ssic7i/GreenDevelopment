@@ -20,17 +20,17 @@ gh repo create OWNER/GreenDevelopment --public --source=. --remote=origin --push
 
 Choose one route. These commands publish the repository; run them when ready. Keep it private instead if public release is not intended.
 
-After publication, replace `OWNER/GreenDevelopment` placeholders in installation examples with the actual repository. The package manifests intentionally omit an unverified repository/homepage URL.
+After publication, replace `OWNER/GreenDevelopment` placeholders in installation examples with the actual repository. The package manifest intentionally omits an unverified repository/homepage URL.
 
 ## Version release
 
 After checks pass and release changes are committed:
 
 ```sh
-git tag -a v0.3.0 -m "GreenDevelopment 0.3.0"
-git push origin v0.3.0
+git tag -a v0.3.2 -m "GreenDevelopment 0.3.2"
+git push origin v0.3.2
 git archive --format=zip --prefix=GreenDevelopment/ \
-  --output=../GreenDevelopment-source.zip v0.3.0
+  --output=../GreenDevelopment-source.zip v0.3.2
 ```
 
 Create a GitHub release from the tag and attach the verified source ZIP and optional plugin ZIP. GitHub's generated source archive also retains the repository installation catalog. The initial prepared plugin ZIP excludes marketplace/Git/CI metadata and is a different artifact from the source ZIP.

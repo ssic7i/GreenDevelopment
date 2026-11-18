@@ -5,6 +5,7 @@ import json
 import os
 from pathlib import Path
 import signal
+import shlex
 import subprocess
 import sys
 import tempfile
@@ -38,6 +39,20 @@ class NativeSmokeTests(unittest.TestCase):
         result=subprocess.run(self.cli('raise SystemExit(9)'),capture_output=True,text=True,timeout=20)
         self.assertEqual(result.returncode,9,result.stderr)
         self.assertEqual(json.loads(result.stdout)['status'],'cleaned',result.stdout)
+
+    def test_startup_command_shares_hook_state_without_plugin_environment(self):
+        hook_env={**os.environ,'PLUGIN_DATA':str(self.root/'plugin data')}
+        startup=subprocess.run([sys.executable,'-B',str(RUNNER),'hook'],input=json.dumps({'hook_event_name':'SessionStart','session_id':'host-smoke','cwd':str(self.repo)}),env=hook_env,capture_output=True,text=True,timeout=20)
+        self.assertEqual(startup.returncode,0,startup.stderr)
+        context=json.loads(startup.stdout)['hookSpecificOutput']['additionalContext']
+        prefix=shlex.split(context.split('Run builds/tests through ',1)[1].split(' --task ',1)[0])
+        # Tools do not inherit the environment assigned exclusively to a hook.
+        tool_env={k:v for k,v in os.environ.items() if k!='PLUGIN_DATA'}
+        result=subprocess.run([*prefix,'--task','host-smoke','--platform','generic','--repo',str(self.repo),'--min-free-mb','0','--',sys.executable,'-c','pass'],env=tool_env,capture_output=True,text=True,timeout=20)
+        self.assertEqual(result.returncode,0,result.stdout+result.stderr)
+        report=json.loads(result.stdout)
+        self.assertTrue(Path(report['evidence']).is_relative_to(self.root/'plugin data/resources'),report)
+        self.assertEqual(report['status'],'cleaned')
 
     def test_timeout_stops_child_and_cleans(self):
         result=subprocess.run(self.cli('import time; time.sleep(60)','--timeout','0.2'),capture_output=True,text=True,timeout=20)

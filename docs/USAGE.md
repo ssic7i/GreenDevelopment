@@ -2,9 +2,9 @@
 
 ## In Codex
 
-Give the agent the task and existing project constraints. The plugin should select applicable skills automatically; `$development-workflow`, `$verification` and `$resource-lifecycle` also work explicitly.
+Give the agent the task and existing project constraints. The plugin should select applicable skills automatically. The host exposes `green-development:development-workflow`, `green-development:verification` and `green-development:resource-lifecycle`; select them from the skills picker when explicitly invoking one.
 
-Startup guidance supplies the exact runner path and session ID. The agent derives required OS/hardware coverage and package/bundle IDs from the project, including test runner IDs. Use that session ID so completion-hook recovery is scoped correctly.
+Startup guidance supplies the exact runner path, `--state-dir` and `--session`. Preserve both options: ordinary tool calls do not inherit the hook's `PLUGIN_DATA` environment, and completion hooks must see the same store and session. The agent derives required OS/hardware coverage and package/bundle IDs from the project, including test runner IDs.
 
 ## Direct runner
 

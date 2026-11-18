@@ -1,5 +1,7 @@
 # Installation and updates
 
+The package uses the local Codex `.codex-plugin/plugin.json` format. In the tested client, a root portable `plugin.json` suppresses bundled hook discovery; do not add one without a host-level regression check.
+
 ## Requirements
 
 Use Python 3.11+, Git, `ps` and `lsof` on macOS/Linux. Check `codex plugin --help` for local plugin support. No `pip install` or MCP setup is needed.
@@ -16,7 +18,7 @@ codex plugin add green-development@green-development
 codex plugin list --marketplace green-development --json
 ```
 
-The first name in the selector is the plugin; the second is its one-plugin marketplace. Restart the desktop app or start a fresh CLI session. Review and trust hooks in Settings → Hooks or `/hooks`. Check that all three skills appear and startup guidance supplies the GreenDevelopment runner path/session ID.
+The first name in the selector is the plugin; the second is its one-plugin marketplace. Restart the desktop app or start a fresh CLI session. Review and trust the seven GreenDevelopment hooks in Settings → Hooks or `/hooks`. Enabled but untrusted hooks do not run. Check that all three skills appear and startup guidance supplies the GreenDevelopment runner path, state directory and session ID.
 
 ## GitHub after publication
 
@@ -70,6 +72,6 @@ codex plugin marketplace remove green-development
 
 Keep retained evidence and resource records while recovery is pending. Uninstallation is not authorization to delete reusable devices or shared caches.
 
-If discovery fails, check CLI support, the catalog path, installed version, enabled state, hook trust and workspace policy. Commands were checked against local CLI help, and the installed CLI discovered this repository's available plugin through read-only configuration overrides. Installation in an active user profile still needs verification.
+If discovery fails, check CLI support, the catalog path, installed version, enabled state, hook trust and workspace policy. Version 0.3.2 was installed in an active local profile; native discovery found three enabled skills and seven enabled hooks with no loading errors. Hook trust and actual automatic dispatch are separate checks; see [validation](../VALIDATION.md) for the recorded status.
 
 References: [plugin marketplaces](https://developers.openai.com/plugins/build/plugins), [hooks and trust](https://learn.chatgpt.com/docs/hooks).

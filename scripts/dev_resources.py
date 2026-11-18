@@ -211,7 +211,7 @@ def hook_result(store,event):
     if kind in ('SessionStart','SubagentStart'):
         # Scope recovery to this source directory, not unrelated projects.
         reports=recover(store,repo=event.get('cwd')) if event.get('cwd') else []
-        text=(f'GreenDevelopment: use the three bundled skills for applicable work. Run builds/tests through python3 {shlex.quote(str(runner))} run --session {shlex.quote(session or "unknown")} --task <slug> --platform <generic|android|ios|docker> --repo <source> -- <command>. '
+        text=(f'GreenDevelopment: use the three bundled skills for applicable work. Run builds/tests through python3 {shlex.quote(str(runner))} run --state-dir {shlex.quote(str(store.root))} --session {shlex.quote(session or "unknown")} --task <slug> --platform <generic|android|ios|docker> --repo <source> -- <command>. '
               'The runner isolates outputs, retains requested artifacts, and cleans its own resources. Never prune shared caches, delete devices, or commandeer active devices. Read resource-lifecycle before a first run. ')
         if reports: text+='Recovery: '+json.dumps(reports)[:1800]
         return {'hookSpecificOutput':{'hookEventName':kind,'additionalContext':text}}
@@ -250,6 +250,9 @@ def main():
     parser.add_argument('--state-dir',type=Path,default=default_state())
     sub=parser.add_subparsers(dest='action',required=True)
     run=sub.add_parser('run',help='run all dependent build/test steps, then clean')
+    # Hook-only PLUGIN_DATA is not inherited by agent tool calls. Carry the
+    # resolved store explicitly; retain the global option for standalone use.
+    run.add_argument('--state-dir',type=Path,default=argparse.SUPPRESS)
     run.add_argument('--repo',default=os.getcwd()); run.add_argument('--task',required=True)
     run.add_argument('--session',required=True); run.add_argument('--platform',choices=['generic','android','ios','docker'],default='generic')
     run.add_argument('--retain',action='append',default=[])

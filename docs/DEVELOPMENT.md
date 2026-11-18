@@ -20,8 +20,8 @@ It creates unique fixtures, checks unrelated controls survive, then removes its 
 
 ## Layout
 
-- `plugin.json`: portable plugin manifest.
-- `.codex-plugin/plugin.json`: Codex compatibility manifest.
+- `.codex-plugin/plugin.json`: canonical local Codex manifest.
+- No root `plugin.json`: the currently tested host skips bundled hooks when a portable manifest is present.
 - `.agents/plugins/marketplace.json`: repository installation catalog.
 - `skills/`: the three skills and their platform/policy references.
 - `scripts/`: shared runner, resource tracking and native adapters.
@@ -34,6 +34,6 @@ GreenDevelopment is the public name; `green-development` is the plugin ID. The e
 
 ## Release checks
 
-Keep both manifest versions identical, run the affected tests and required native process checks, validate skill metadata and local links, and update `VALIDATION.md` with actual evidence. Check archives for secrets, local paths, runtime data and Git metadata. Preserve LICENSE/NOTICE. Never describe a local check as a GitHub Actions run or installed-host verification.
+Update the canonical manifest version, run the affected tests and required native process checks, validate skill metadata and local links, and update `VALIDATION.md` with actual evidence. Check archives for secrets, local paths, runtime data and Git metadata. Preserve LICENSE/NOTICE. Never describe a local check as a GitHub Actions run or installed-host verification.
 
-The source ZIP includes the repository marketplace so it can be installed after extraction. The plugin ZIP contains one plugin with manifests, skills, scripts, hooks, tests, docs and license files; it excludes `.git`, `.agents` and `.github`. See [publishing](PUBLISHING.md).
+The source ZIP includes the repository marketplace so it can be installed after extraction. The plugin ZIP contains one plugin with its manifest, skills, scripts, hooks, tests, docs and license files; it excludes `.git`, `.agents` and `.github`. See [publishing](PUBLISHING.md).
