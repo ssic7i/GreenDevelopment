@@ -1,0 +1,4 @@
+interface:
+  display_name: "Resource Lifecycle"
+  short_description: "Run builds and clean only owned resources"
+  default_prompt: "Use $resource-lifecycle for this development task."

@@ -1,0 +1,83 @@
+{
+  "description": "Owned build/test resource lifecycle; no global pruning.",
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 -B \"${PLUGIN_ROOT}/scripts/dev_resources.py\" hook",
+            "timeout": 45
+          }
+        ]
+      }
+    ],
+    "SubagentStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 -B \"${PLUGIN_ROOT}/scripts/dev_resources.py\" hook",
+            "timeout": 45
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 -B \"${PLUGIN_ROOT}/scripts/dev_resources.py\" hook",
+            "timeout": 45
+          }
+        ],
+        "matcher": "Bash"
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 -B \"${PLUGIN_ROOT}/scripts/dev_resources.py\" hook",
+            "timeout": 45
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 -B \"${PLUGIN_ROOT}/scripts/dev_resources.py\" hook",
+            "timeout": 45
+          }
+        ]
+      }
+    ],
+    "Interrupt": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 -B \"${PLUGIN_ROOT}/scripts/dev_resources.py\" hook",
+            "timeout": 3
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 -B \"${PLUGIN_ROOT}/scripts/dev_resources.py\" hook",
+            "timeout": 3
+          }
+        ]
+      }
+    ]
+  }
+}

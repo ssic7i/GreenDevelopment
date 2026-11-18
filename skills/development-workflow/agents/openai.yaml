@@ -1,0 +1,4 @@
+interface:
+  display_name: "Development Workflow"
+  short_description: "Plan and implement focused software changes"
+  default_prompt: "Use $development-workflow for this development task."

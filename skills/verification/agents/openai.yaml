@@ -1,0 +1,4 @@
+interface:
+  display_name: "Verification"
+  short_description: "Verify changed behavior and delivery gates"
+  default_prompt: "Use $verification for this development task."

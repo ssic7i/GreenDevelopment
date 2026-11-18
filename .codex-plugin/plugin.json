@@ -1,0 +1,15 @@
+{
+  "name": "green-development",
+  "version": "0.3.0",
+  "description": "Development, verification and owned-resource cleanup for local builds and tests.",
+  "skills": "./skills/",
+  "hooks": "./hooks/hooks.json",
+  "interface": {
+    "displayName": "GreenDevelopment",
+    "shortDescription": "Build, verify, clean up"
+  },
+  "license": "Apache-2.0",
+  "author": {
+    "name": "Serhii Sheiko"
+  }
+}

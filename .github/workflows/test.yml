@@ -1,0 +1,33 @@
+name: Tests
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: tests-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+      - name: Ensure process inspection tools
+        run: |
+          if ! command -v lsof >/dev/null; then
+            sudo apt-get update
+            sudo apt-get install -y lsof
+          fi
+          command -v ps
+      - name: Unit and native subprocess tests
+        env:
+          DEV_WORKFLOW_NATIVE_SMOKE: '1'
+        run: python3 -B -m unittest discover -s tests -v

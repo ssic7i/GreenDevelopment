@@ -1,0 +1,11 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright 2026 Serhii Sheiko
+// Every project, including included builds, gets a separate task-owned output path.
+gradle.beforeProject { project ->
+    def taskRoot = System.getenv('DEV_WORKFLOW_BUILD_ROOT')
+    if (!taskRoot) throw new GradleException('DEV_WORKFLOW_BUILD_ROOT is required')
+    def key = java.security.MessageDigest.getInstance('SHA-256')
+        .digest(project.rootDir.canonicalPath.getBytes('UTF-8')).encodeHex().toString().substring(0, 16)
+    def component = project.path == ':' ? 'root' : project.path.substring(1).replace(':', '/')
+    project.layout.buildDirectory.set(new File(taskRoot, key + '/' + component))
+}

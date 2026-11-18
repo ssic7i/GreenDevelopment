@@ -1,0 +1,20 @@
+{
+  "name": "green-development",
+  "interface": {
+    "displayName": "GreenDevelopment"
+  },
+  "plugins": [
+    {
+      "name": "green-development",
+      "source": {
+        "source": "local",
+        "path": "./"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}
