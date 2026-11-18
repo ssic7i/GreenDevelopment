@@ -1,6 +1,6 @@
 # GreenDevelopment validation — 0.3.2
 
-Executed on 2026-11-18. GreenDevelopment 0.3.2 is installed and enabled in the local Codex profile. It has not been published. Automatic host dispatch is pending explicit hook trust; see the limitations below.
+Executed on 2026-11-18. GreenDevelopment 0.3.2 is installed and enabled in the local Codex profile. It has not been published. Native host dispatch and automatic Stop cleanup were verified after the user trusted the seven hooks; see the precise coverage below.
 
 ## Repository preparation
 
@@ -9,7 +9,7 @@ GreenDevelopment 0.3.2 fixes two issues found during real local installation:
 - The tested Codex client ignored hooks when the root portable `plugin.json` existed. Minimal host probes loaded them only with `.codex-plugin/plugin.json` as the sole manifest. Native `plugin/read`, `skills/list` and `hooks/list` now discover the installed package: all three skills enabled, all seven hooks enabled, no loading errors.
 - Startup guidance omitted the hook's state directory. A failing native regression reproduced normal tool execution writing to the standalone store instead. Startup now supplies `run --state-dir ... --session ...`; the regression passes with `PLUGIN_DATA` deliberately absent from the tool environment.
 
-The local marketplace and plugin were registered with the supported `codex plugin` commands. The latest observed hook trust status is **untrusted**. Registration and enabled state do not prove execution. No trust bypass was used.
+The local marketplace and plugin were registered with the supported `codex plugin` commands. After the user reviewed the hooks, native `hooks/list` confirmed all seven as **trusted** and enabled. An ephemeral Codex app-server session then exercised the installed plugin without trust or sandbox bypass flags.
 
 LICENSE is the unmodified official Apache License 2.0 text, SHA-256 `cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30`. The canonical manifest and all three skills declare `Apache-2.0`; source headers and NOTICE identify the copyright holder. The Git repository has no configured remote at handoff. GitHub Actions configuration was parsed locally; hosted CI has not run.
 
@@ -24,6 +24,18 @@ LICENSE is the unmodified official Apache License 2.0 text, SHA-256 `cfc7749b96f
 - The official local skill validator accepted all **three skills**. Metadata, the canonical manifest, hook paths/timeouts, Python syntax, internal documentation links and absence of project-specific/local installation paths were checked.
 - Source/plugin ZIPs were checked for expected contents, unsafe paths, CRC integrity and byte-for-byte agreement with committed source. Only the source archive includes the repository marketplace and CI configuration; neither contains `.git` or runtime state. The extracted runner's CLI loaded successfully.
 
+## Installed-host verification
+
+An ephemeral Codex session explicitly loaded all three installed skills and exercised normal tool execution. The host emitted successful `SessionStart`, `PreToolUse` and `Stop` dispatch events. The verification harness observed the following independently of the agent's final message:
+
+- `PreToolUse` denied one direct `./gradlew test` attempt against a harmless fake executable; its execution marker was absent.
+- The generic runner preserved the state directory/session from startup, exited successfully, removed its work directory, reported zero remaining bytes and retained the requested artifact. Its content was checked.
+- The last tool command created two signed inactive test records. The agent did not invoke recovery. The real `Stop` hook automatically cleaned only the record for that session; the other session's work still existed. The harness then cleaned its own control fixture.
+- Session shutdown produced the expected `SessionEnd` marker in the same plugin state store.
+- The short-lived app-server exited. No Android/iOS devices or Docker workloads were launched for this host check; shared caches and unrelated resources were untouched.
+
+The seven JSON contracts also passed against the installed scripts. `Interrupt`, `SubagentStart` and `SubagentStop` have contract coverage here, but their native host event dispatch was not separately exercised. No redundant agents were spawned to claim broader coverage.
+
 ## Safety coverage
 
 Tests reject adopting unowned directories, tampered records, symlinks, replaced work directories, missing required retained outputs, uncertain process activity, active-run recovery, changed device leases, Android process reuse, iOS boot reuse, wrong AVDs, foreign Docker labels, daemon changes, external volumes/binds, Compose option overrides and shared Gradle daemon shutdown. A fresh independent review found five issues in those areas; the fixes have regression coverage.
@@ -34,6 +46,8 @@ The cleaner operates on registered resources and preserves shared caches, source
 
 Android/iOS creation, boot and app cleanup were tested with controlled command responses. Actual inventory parsing and compatibility selection were checked read-only against the installed native tools. No real device was created/booted and no Gradle application build or Xcode application build was run for this package. Installed `simctl listapps`, `simctl create` and catalog interfaces were inspected. A project's first native use still needs its normal platform verification.
 
-Actual Codex discovery and local installation were exercised. Automatic hook dispatch is still unverified because the seven hooks need explicit trust. The computer-use tool denied access to Codex settings; trust confirmation was requested from the user. A prepared ephemeral host smoke test requires persisted trust and checks PreToolUse denial plus automatic Stop cleanup while preserving another session. Direct JSON invocation validates the scripts, not automatic host dispatch. Disabled hooks, tools outside their coverage, deliberately detached workers and arbitrary scripts that bypass the runner are outside the enforcement guarantee.
+Actual Codex discovery, installation, persisted trust and the host paths described above were exercised. Direct JSON invocation of the other events validates their scripts, not native dispatch. Hook trust may need review again after future executable changes. Disabled hooks, tools outside their coverage, deliberately detached workers and arbitrary scripts that bypass the runner are outside the enforcement guarantee.
+
+The command guard is a conservative text heuristic, not a shell parser: it also blocked a documentation-writing shell heredoc that merely mentioned a native build command. The documentation was edited with the dedicated file-editing tool instead. This false-positive limit remains in 0.3.2.
 
 SIGKILL or host failure can interrupt cleanup; signed records support later scoped recovery. A live orphan or lost device-instance proof remains blocked to protect other work. No machine-wide cleanup was performed.
